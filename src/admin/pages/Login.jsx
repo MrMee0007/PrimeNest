@@ -22,7 +22,14 @@ export default function AdminLogin() {
       if (!err.response) {
         setError('Cannot connect to server. Make sure the backend is running on port 5001.')
       } else {
-        setError(err.response?.data?.error || 'Login failed. Please try again.')
+        const resError = err.response?.data?.error
+        if (typeof resError === 'string') {
+          setError(resError)
+        } else if (resError && typeof resError === 'object') {
+          setError(resError.message || resError.code || 'Login failed. Please try again.')
+        } else {
+          setError('Login failed. Please try again.')
+        }
       }
     } finally {
       setLoading(false)
