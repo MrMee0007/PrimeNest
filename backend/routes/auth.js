@@ -5,6 +5,16 @@ const db = require('../db')
 
 const SECRET = process.env.JWT_SECRET || 'primenest-secret-2024'
 
+// GET /api/auth/db-test
+router.get('/db-test', async (req, res) => {
+  try {
+    const result = await db.all('SELECT NOW()')
+    res.json({ status: 'connected', time: result[0] })
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message, stack: err.stack })
+  }
+})
+
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
