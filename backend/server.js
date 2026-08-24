@@ -56,19 +56,24 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' })
 })
 
-// ── Kill any existing process on port then start ───────────────────────────────
-const server = app.listen(PORT, () => {
-  console.log(`\n✅ PrimeNest API ready → http://localhost:${PORT}`)
-  console.log(`   Login: admin@primenest.com / admin123\n`)
-})
-
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`\n❌ Port ${PORT} is already in use. Kill the old process and try again.\n`)
-    process.exit(1)
-  }
-  throw err
-})
-
 // ── Init DB ───────────────────────────────────────────────────────────────────
-initDB()
+initDB().catch(err => console.error('DB Init Error:', err.message))
+
+// ── Start server conditionally (skip when hosted as Vercel serverless function)
+if (!process.env.VERCEL) {
+  const server = app.listen(PORT, () => {
+    console.log(`\n✅ PrimeNest API ready → http://localhost:${PORT}`)
+    console.log(`   Login: admin@primenest.com / admin123\n`)
+  })
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`\n❌ Port ${PORT} is already in use. Kill the old process and try again.\n`)
+      process.exit(1)
+    }
+    throw err
+  })
+}
+
+module.exports = app
+
