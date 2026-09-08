@@ -17,16 +17,15 @@ if (connectionString) {
   console.log('🔌 Database: PostgreSQL mode active')
 } else {
   try {
-    const Database = require('better-sqlite3')
+    const reqModule = eval('require')
+    const Database = reqModule('better-sqlite3')
     const DB_PATH = path.join(__dirname, 'primenest.db')
     sqliteDb = new Database(DB_PATH)
     sqliteDb.pragma('journal_mode = WAL')
     sqliteDb.pragma('foreign_keys = ON')
     console.log('🔌 Database: SQLite local fallback active')
   } catch (err) {
-    console.warn('\n⚠️  WARNING: Could not load local SQLite database (better-sqlite3 binary issue).')
-    console.warn('👉 To run locally, please configure a PostgreSQL database in your .env file:')
-    console.warn('   DATABASE_URL=postgresql://username:password@localhost:5432/databasename\n')
+    console.warn('\n⚠️ SQLite fallback disabled or module unavailable.')
   }
 }
 
