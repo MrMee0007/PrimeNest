@@ -39,6 +39,8 @@ app.use(express.json({ limit: '20mb' }))
 app.use(express.urlencoded({ extended: true, limit: '20mb' }))
 
 // ── Static uploads ────────────────────────────────────────────────────────────
+const tmpUploadsDir = path.join('/tmp', 'uploads')
+app.use('/uploads', express.static(tmpUploadsDir))
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 // ── Routes ────────────────────────────────────────────────────────────────────

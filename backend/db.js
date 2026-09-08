@@ -93,11 +93,17 @@ const db = {
   }
 }
 
-// ── Database Initialization & Seeding ────────────────────────────────────────
+let dbInitialized = false
 async function initDB() {
+  if (dbInitialized) return
+  dbInitialized = true
   const bcrypt = require('bcryptjs')
-  const UPLOADS_PATH = path.join(__dirname, 'uploads')
-  if (!fs.existsSync(UPLOADS_PATH)) fs.mkdirSync(UPLOADS_PATH, { recursive: true })
+  const UPLOADS_PATH = process.env.VERCEL ? path.join('/tmp', 'uploads') : path.join(__dirname, 'uploads')
+  try {
+    if (!fs.existsSync(UPLOADS_PATH)) fs.mkdirSync(UPLOADS_PATH, { recursive: true })
+  } catch (err) {
+    console.warn('Uploads folder creation skipped:', err.message)
+  }
 
   if (isPostgres) {
     // PostgreSQL Tables setup
